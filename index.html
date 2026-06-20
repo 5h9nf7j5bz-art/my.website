@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Helena</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #ffe8d6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: '💙';
+            position: fixed;
+            font-size: 40px;
+            opacity: 0.1;
+            animation: float 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        body::before {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        body::after {
+            bottom: 10%;
+            right: 5%;
+            animation-delay: 1s;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+        }
+
+        .stage {
+            display: none;
+        }
+
+        .stage.active {
+            display: block;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(63, 81, 181, 0.12);
+            padding: 60px 50px;
+            text-align: center;
+            border: 2px solid #e0e7ff;
+        }
+
+        .card h2 {
+            font-size: 28px;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .card p {
+            color: #3b82f6;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .envelope-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .memory-card, .memory-option {
+            background: linear-gradient(135deg, #e3f2fd 0%, #fff3e0 100%);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #bbdefb;
+        }
+
+        .memory-card:hover, .memory-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(63, 81, 181, 0.2);
+        }
+
+        .memory-card.selected, .memory-option.selected {
+            background: linear-gradient(135deg, #3b82f6 0%, #ff9800 100%);
+            color: white;
+            border-color: #1e3a8a;
+        }
+
+        .memory-card h3, .memory-option h3 {
+            font-size: 28px;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+
+        .memory-card.selected h3, .memory-option.selected h3 {
+            color: white;
+        }
+
+        .memory-card p, .memory-option p {
+            font-size: 13px;
+            color: #1e3a8a;
+            margin: 0;
+        }
+
+        .memory-card.selected p, .memory-option.selected p {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #1e3a8a;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 18px;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff9800;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+        }
+
+        .error-msg {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .success-msg {
+            color: #16a34a;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .success-msg.show {
+            display: block;
+        }
+
+        .letter-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(63, 81, 181, 0.12);
+            overflow: hidden;
+            border: 2px solid #e0e7ff;
+        }
+
+        .letter-header {
+            background: linear-gradient(135deg, #e3f2fd 0%, #fff3e0 100%);
+            padding: 40px 50px 30px;
+            text-align: center;
+            border-bottom: 2px solid rgba(63, 81, 181, 0.2);
+        }
+
+        .letter-header h1 {
+            font-size: 32px;
+            color: #1e3a8a;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+
+        .letter-content {
+            padding: 50px;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #1e3a8a;
+        }
+
+        .paragraph-wrapper {
+            display: none;
+            animation: fadeInLetter 0.8s ease-out forwards;
+        }
+
+        .paragraph-wrapper.active {
+            display: block;
+        }
+
+        .paragraph-wrapper p {
+            margin-bottom: 0;
+            text-align: justify;
+        }
+
+        .letter-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(63, 81, 181, 0.2);
+        }
+
+        .letter-nav button {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+        }
+
+        .letter-nav button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .letter-nav button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .para-indicator {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .flower {
+            position: fixed;
+            pointer-events: none;
+            font-size: 24px;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fadeInLetter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .letter-content p:first-child {
+            text-indent: 40px;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 40px;
+            font-style: italic;
+            color: #ff9800;
+            opacity: 0;
+            animation: fadeInLetter 0.8s ease-out 1.2s forwards;
+        }
+
+        .heart {
+            display: inline-block;
+            color: #ff9800;
+            margin: 0 4px;
+            animation: heartbeat 1.4s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.15); }
+            50% { transform: scale(1); }
+        }
+
+        .progress {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 40px 25px;
+            }
+            .envelope-icon {
+                font-size: 60px;
+            }
+            .memory-grid {
+                grid-template-columns: 1fr;
+            }
+            .letter-content {
+                padding: 30px 25px;
+                font-size: 16px;
+            }
+            .letter-content p:first-child {
+                text-indent: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="stage active" id="stage1">
+            <div class="card">
+                <span class="envelope-icon">✉️</span>
+                <h2>Hi Helena</h2>
+                <p>I have something to tell you. But first, let's see if you remember us as well as I do.</p>
+                <button class="btn" onclick="nextStage()">Open Letter</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage2">
+            <div class="card">
+                <h2>Do You Remember?</h2>
+                <p>Let's see how well you know us</p>
+                <div class="progress">Step 1 of 3</div>
+                
+                <div class="memory-question" id="q1">
+                    <h3 style="color: #1e3a8a; margin-bottom: 20px; font-size: 18px;">When was your favourite experience out of all with me?</h3>
+                    <div class="memory-grid">
+                        <div class="memory-option" onclick="selectQ1Option(this)" data-correct="true">
+                            <h3>💃</h3>
+                            <p>The dance</p>
+                        </div>
+                        <div class="memory-option" onclick="selectQ1Option(this)" data-correct="false">
+                            <h3>🏫</h3>
+                            <p>First time we stayed after school</p>
+                        </div>
+                        <div class="memory-option" onclick="selectQ1Option(this)" data-correct="false">
+                            <h3>👋</h3>
+                            <p>The first time we met</p>
+                        </div>
+                        <div class="memory-option" onclick="selectQ1Option(this)" data-correct="false">
+                            <h3>❓</h3>
+                            <p>Other…</p>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="nextQuestion(1)">Next</button>
+                </div>
+
+                <div class="memory-question" id="q2" style="display: none;">
+                    <h3 style="color: #1e3a8a; margin-bottom: 20px; font-size: 18px;">What is OUR favourite number? 👀</h3>
+                    <div class="input-group">
+                        <input type="text" id="q2Input" placeholder="Type the number..." onkeypress="handleQ2KeyPress(event)">
+                        <div class="error-msg" id="q2Error">That's not it...</div>
+                        <div class="success-msg" id="q2Success">That's it! 💕</div>
+                    </div>
+                    <button class="btn" onclick="checkQ2()">Submit</button>
+                </div>
+
+                <div class="memory-question" id="q3" style="display: none;">
+                    <h3 style="color: #1e3a8a; margin-bottom: 20px; font-size: 18px;">What do I love most about you?</h3>
+                    <div class="memory-grid" style="grid-template-columns: 1fr;">
+                        <div class="memory-option" onclick="selectQ3Option(this)" data-correct="true">
+                            <h3>✨</h3>
+                            <p>All of the above and MUCH more</p>
+                        </div>
+                        <div class="memory-option" onclick="selectQ3Option(this)" data-correct="false">
+                            <h3>😍</h3>
+                            <p>You're beautiful</p>
+                        </div>
+                        <div class="memory-option" onclick="selectQ3Option(this)" data-correct="false">
+                            <h3>👑</h3>
+                            <p>You're perfect</p>
+                        </div>
+                        <div class="memory-option" onclick="selectQ3Option(this)" data-correct="false">
+                            <h3>🎵</h3>
+                            <p>Your gentle voice</p>
+                        </div>
+                        <div class="memory-option" onclick="selectQ3Option(this)" data-correct="false">
+                            <h3>😄</h3>
+                            <p>Your 67 jokes</p>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="finishMemories()">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stage" id="stage3">
+            <div class="card">
+                <h2>One Last Thing</h2>
+                <p>There's one code that unlocks everything</p>
+                <div class="progress">Step 2 of 3</div>
+                
+                <div class="input-group">
+                    <label>Enter the code:</label>
+                    <input type="text" id="codeInput" placeholder="What's the code?" onkeypress="handleCodeKeyPress(event)">
+                    <div class="error-msg" id="codeError">Not quite...</div>
+                    <div class="success-msg" id="codeSuccess">You got it! 💕</div>
+                </div>
+
+                <button class="btn" onclick="checkCode()">Submit</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage4">
+            <div class="progress">Step 3 of 3</div>
+            <div class="letter-container">
+                <div class="letter-header">
+                    <h1>Helena</h1>
+                </div>
+                <div class="letter-content">
+                    <div class="paragraph-wrapper" data-para="1">
+                        <p>Helena, my soul, my world, my happiness, my heart, my sunshine, my beautiful girl. I sincerely, with all my heart, apologize for everything that's been going on for the past couple of days. Like, seriously.</p>
+                    </div>
+
+                    <div class="paragraph-wrapper" data-para="2">
+                        <p>I apologize for not making everything up to you sooner. I apologize for acting weird and being a chud. I apologize for exaggerating my statement for no reason, and I certainly am sorry for just being the way I'm being for the past week or two.</p>
+                    </div>
+
+                    <div class="paragraph-wrapper" data-para="3">
+                        <p>I really do love you so incredibly much. Ever since meeting you, you've presented me with a world of genuine care and sincerity that I wouldn't find in anyone else. You showed me that I can find someone with a voice that's so angelic and so gentle.</p>
+                    </div>
+
+                    <div class="paragraph-wrapper" data-para="4">
+                        <p>Helena, I love you because you make me feel like I'm not being crazy and that I'm understood no matter what difficult time I have. I love you because you make ordinary moments we have together feel so special and turn them into unforgettable moments.</p>
+                    </div>
+
+                    <div class="paragraph-wrapper" data-para="5">
+                        <p>I love you because you inspire me day after day and night after night to keep bettering myself in such a bright and positive way. I love you because you being in my life makes that dark and dimmed out life become a much brighter and happier place.</p>
+                    </div>
+
+                    <div class="paragraph-wrapper" data-para="6">
+                        <p>I love you because you are you, and I'd never change anything about you because you're perfect. I'm really sorry about not keeping my word at the time, and I'm really sorry for what I said yesterday when I said "Omds I hate girls."</p>
+                    </div>
+
+                    <div class="paragraph-wrapper" data-para="7">
+                        <p>I love you Helena, and I love you like the 6 loves the 7. <span class="heart">♡</span></p>
+                    </div>
+
+                    <div class="paragraph-wrapper" data-para="8">
+                        <div class="signature">
+                            I hope you enjoyed this experience…
+                        </div>
+                    </div>
+
+                    <div class="letter-nav">
+                        <button onclick="prevParagraph()" id="prevBtn">← Back</button>
+                        <span class="para-indicator"><span id="currentPara">1</span> / 8</span>
+                        <button onclick="nextParagraph()" id="nextBtn">Next →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentParagraph = 1;
+        const totalParagraphs = 8;
+        let q1Correct = false;
+        let q2Correct = false;
+        let q3Correct = false;
+
+        function nextStage() {
+            hideAllStages();
+            document.getElementById('stage2').classList.add('active');
+        }
+
+        function selectQ1Option(element) {
+            document.querySelectorAll('#q1 .memory-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            q1Correct = element.dataset.correct === 'true';
+        }
+
+        function nextQuestion(questionNum) {
+            if (questionNum === 1) {
+                if (q1Correct) {
+                    document.getElementById('q1').style.display = 'none';
+                    document.getElementById('q2').style.display = 'block';
+                } else {
+                    alert('Try again! Remember the special moment we shared...');
+                }
+            }
+        }
+
+        function checkQ2() {
+            const input = document.getElementById('q2Input').value.trim();
+            const errorMsg = document.getElementById('q2Error');
+            const successMsg = document.getElementById('q2Success');
+            
+            if (input === '67') {
+                q2Correct = true;
+                successMsg.classList.add('show');
+                errorMsg.classList.remove('show');
+                setTimeout(() => {
+                    document.getElementById('q2').style.display = 'none';
+                    document.getElementById('q3').style.display = 'block';
+                }, 600);
+            } else {
+                errorMsg.classList.add('show');
+                successMsg.classList.remove('show');
+            }
+        }
+
+        function handleQ2KeyPress(event) {
+            if (event.key === 'Enter') {
+                checkQ2();
+            }
+        }
+
+        function selectQ3Option(element) {
+            document.querySelectorAll('#q3 .memory-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            q3Correct = element.dataset.correct === 'true';
+        }
+
+        function finishMemories() {
+            if (q3Correct) {
+                hideAllStages();
+                document.getElementById('stage3').classList.add('active');
+            } else {
+                alert('That\'s the one! All of the above and MUCH more 💕');
+            }
+        }
+
+        function checkCode() {
+            const input = document.getElementById('codeInput').value.trim();
+            const errorMsg = document.getElementById('codeError');
+            const successMsg = document.getElementById('codeSuccess');
+            
+            if (input === '67') {
+                successMsg.classList.add('show');
+                errorMsg.classList.remove('show');
+                setTimeout(() => {
+                    hideAllStages();
+                    document.getElementById('stage4').classList.add('active');
+                    createFlowerAnimation();
+                    showParagraph(1);
+                }, 800);
+            } else {
+                errorMsg.classList.add('show');
+                successMsg.classList.remove('show');
+            }
+        }
+
+        function handleCodeKeyPress(event) {
+            if (event.key === 'Enter') {
+                checkCode();
+            }
+        }
+
+        function createFlowerAnimation() {
+            const flowers = ['🌹', '🌺', '🌸', '🌼', '🌻'];
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const flower = document.createElement('div');
+                    flower.className = 'flower';
+                    flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+                    flower.style.left = Math.random() * 100 + '%';
+                    flower.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    flower.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(flower);
+                    
+                    setTimeout(() => flower.remove(), 5000);
+                }, i * 30);
+            }
+        }
+
+        function showParagraph(num) {
+            currentParagraph = num;
+            document.querySelectorAll('.paragraph-wrapper').forEach(p => p.classList.remove('active'));
+            document.querySelector(`[data-para="${num}"]`).classList.add('active');
+            document.getElementById('currentPara').textContent = num;
+            
+            document.getElementById('prevBtn').disabled = num === 1;
+            document.getElementById('nextBtn').disabled = num === totalParagraphs;
+        }
+
+        function nextParagraph() {
+            if (currentParagraph < totalParagraphs) {
+                showParagraph(currentParagraph + 1);
+            }
+        }
+
+        function prevParagraph() {
+            if (currentParagraph > 1) {
+                showParagraph(currentParagraph - 1);
+            }
+        }
+
+        function hideAllStages() {
+            document.querySelectorAll('.stage').forEach(stage => {
+                stage.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>
